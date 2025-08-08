@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The World's Strongest Password</title>
+  <style>
+    body {
+      background: #0e0e0e;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: cyan;
+      margin-bottom: 30px;
+    }
+    .container {
+      background: #1b1b1b;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      text-align: center;
+    }
+    input[type="password"], input[type="text"] {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      width: 300px;
+      font-size: 18px;
+      margin-right: 10px;
+    }
+    .eye {
+      background: #333;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .rule {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #ccc;
+    }
+    .success {
+      color: lime;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>The World's Strongest Password</h1>
+  <div class="container">
+    <input type="password" id="password" placeholder="Enter password...">
+    <span class="eye" onclick="toggleVisibility()">👁️</span>
+    <div class="rule" id="ruleText"></div>
+  </div>
+
+  <script>
+    const passwordInput = document.getElementById('password');
+    const ruleText = document.getElementById('ruleText');
+
+    let currentRule = 0;
+
+    const rules = [
+      { text: "Rule 1 - Password must be at least 5 characters", test: pwd => pwd.length >= 5 },
+      { text: "Rule 2 - Must include a number", test: pwd => /\d/.test(pwd) },
+      { text: "Rule 3 - Must include an uppercase letter", test: pwd => /[A-Z]/.test(pwd) },
+      { text: "Rule 4 - Must include a special character", test: pwd => /[^a-zA-Z0-9]/.test(pwd) },
+      { text: "Rule 5 - Digits must add up to 25", test: pwd => pwd.split('').filter(c => !isNaN(c)).reduce((a,b) => +a + +b, 0) === 25 },
+      { text: "Rule 6 - Must include a month", test: pwd => ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"].some(m => pwd.toLowerCase().includes(m)) },
+      { text: "Rule 7 - Must include CAPTCHA: 'X7G4'", test: pwd => pwd.includes('X7G4') },
+      { text: "Rule 8 - Must include periodic symbol (e.g., Na, Fe, Cu)", test: pwd => ["Na", "Fe", "Cu", "Au", "Ag", "Mg", "Zn", "Pb"].some(sym => pwd.includes(sym)) },
+      { text: "Rule 9 - Must include a cricket jersey number (7, 10, 18)", test: pwd => /7|10|18/.test(pwd) },
+      { text: "Rule 10 - Must include a numeral", test: pwd => /[0-9]/.test(pwd) },
+      { text: "Rule 11 - Must include your birth year (e.g., 2005)", test: pwd => /200[0-9]|201[0-9]|202[0-5]/.test(pwd) },
+
+      // 19 more fun/creative rules
+      { text: "Rule 12 - Must include 'pass'", test: pwd => pwd.toLowerCase().includes('pass') },
+      { text: "Rule 13 - Must not contain spaces", test: pwd => !pwd.includes(' ') },
+      { text: "Rule 14 - Must include '@'", test: pwd => pwd.includes('@') },
+      { text: "Rule 15 - Must be less than 20 characters", test: pwd => pwd.length < 20 },
+      { text: "Rule 16 - Must contain a lowercase vowel", test: pwd => /[aeiou]/.test(pwd) },
+      { text: "Rule 17 - Must contain at least 3 numbers", test: pwd => (pwd.match(/\d/g) || []).length >= 3 },
+      { text: "Rule 18 - Must not start with a number", test: pwd => !/^[0-9]/.test(pwd) },
+      { text: "Rule 19 - Must include a fruit name (e.g., apple, mango)", test: pwd => /(apple|mango|banana|kiwi)/i.test(pwd) },
+      { text: "Rule 20 - Must include '#' symbol", test: pwd => pwd.includes('#') },
+      { text: "Rule 21 - Must end with a letter", test: pwd => /[a-zA-Z]$/.test(pwd) },
+      { text: "Rule 22 - Must include at least 2 capital letters", test: pwd => (pwd.match(/[A-Z]/g) || []).length >= 2 },
+      { text: "Rule 23 - Must include a city name (e.g., delhi, mumbai)", test: pwd => /(delhi|mumbai|paris|tokyo)/i.test(pwd) },
+      { text: "Rule 24 - Must include '&'", test: pwd => pwd.includes('&') },
+      { text: "Rule 25 - Must contain the word 'game'", test: pwd => /game/i.test(pwd) },
+      { text: "Rule 26 - Must contain 4 or more letters", test: pwd => (pwd.match(/[a-zA-Z]/g) || []).length >= 4 },
+      { text: "Rule 27 - Must include a programming language (e.g., java, python)", test: pwd => /(java|python|c\+\+|html)/i.test(pwd) },
+      { text: "Rule 28 - Must include '$'", test: pwd => pwd.includes('$') },
+      { text: "Rule 29 - Must contain at least 10 total characters", test: pwd => pwd.length >= 10 },
+      { text: "Rule 30 - Must include '💻' emoji", test: pwd => pwd.includes('💻') },
+    ];
+
+    function updateRule() {
+      const pwd = passwordInput.value;
+      if (currentRule < rules.length && rules[currentRule].test(pwd)) {
+        currentRule++;
+      }
+
+      if (currentRule >= rules.length) {
+        ruleText.innerHTML = `<span class='success'>✅ Strong Password! You passed the game 🎉</span>`;
+      } else {
+        ruleText.textContent = rules[currentRule].text;
+      }
+    }
+
+    passwordInput.addEventListener('input', updateRule);
+
+    function toggleVisibility() {
+      passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    }
+
+    // Initial display
+    ruleText.textContent = rules[0].text;
+  </script>
+</body>
+</html>
